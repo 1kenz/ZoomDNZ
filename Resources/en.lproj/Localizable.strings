@@ -87,3 +87,4 @@
 "Shortcut unavailable" = "Shortcut unavailable";
 "These shortcuts are already used by another app: %@" = "These shortcuts are already used by another app: %@";
 "OK" = "OK";
+"Could not open the captures folder" = "Could not open the captures folder";

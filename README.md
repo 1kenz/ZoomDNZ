@@ -36,12 +36,12 @@ Ad-hoc signing changes identity on every build, so macOS may ask again; set `SIG
 
 ## Test
 ```bash
-swift test
+./test.sh
 ```
-Tests use Swift Testing, which ships with the Command Line Tools (XCTest would require full Xcode).
+The checks run in-process in a debug build (`ZoomDNZ --self-test`), so they need only the Command Line Tools. They are not compiled into release builds.
 
 ## Where files go
-Saved screenshots: `~/Documents/ZoomDNZ Screenshots/` (directory 0700, files 0600). Nothing is uploaded anywhere.
+Saved screenshots: `~/Documents/ZoomDNZ Screenshots/` (directory 0700, files 0600). ZoomDNZ itself uploads nothing. If iCloud Drive's *Desktop & Documents Folders* is enabled in macOS, the system syncs that folder to iCloud; turn it off or move the captures if that matters to you.
 
 ## Security and privacy
 The app has no network code and no secrets. Captures can contain sensitive data, so they are stored owner-only and never logged.

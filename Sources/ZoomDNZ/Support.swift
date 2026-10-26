@@ -5,18 +5,26 @@ import ScreenCaptureKit
 func L(_ key: String) -> String { NSLocalizedString(key, comment: "") }
 
 enum Storage {
-    /// ~/Documents/ZoomDNZ Screenshots (kept apart from the project folder name). Owner-only access.
+    /// ~/Documents/ZoomDNZ Screenshots (kept apart from the project folder name). Path only, no side effects.
     static func capturesDirectory() -> URL {
         let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let dir = documents.appendingPathComponent("ZoomDNZ Screenshots", isDirectory: true)
-        // A failure here is not swallowed silently: savePNG will throw when the write fails.
-        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true,
-                                                 attributes: [.posixPermissions: 0o700])
+        return documents.appendingPathComponent("ZoomDNZ Screenshots", isDirectory: true)
+    }
+
+    /// Creates the captures directory if needed and enforces owner-only access (0700) on every call,
+    /// including when the directory already existed with looser permissions. Throws on failure.
+    static func preparedCapturesDirectory() throws -> URL {
+        let dir = capturesDirectory()
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true,
+                                                attributes: [.posixPermissions: 0o700])
+        try FileManager.default.setAttributes([.posixPermissions: 0o700], ofItemAtPath: dir.path)
         return dir
     }
 
     /// Writes PNG data to a new, unique, owner-only (0600) file. Never overwrites an existing capture.
-    static func savePNG(_ data: Data, in directory: URL = capturesDirectory()) throws -> URL {
+    /// Without an explicit `directory` the prepared captures directory is used.
+    static func savePNG(_ data: Data, in directory: URL? = nil) throws -> URL {
+        let directory = try directory ?? preparedCapturesDirectory()
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.dateFormat = "yyyy-MM-dd HH.mm.ss"

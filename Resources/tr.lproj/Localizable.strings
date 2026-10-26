@@ -87,3 +87,4 @@
 "Shortcut unavailable" = "Kısayol kullanılamıyor";
 "These shortcuts are already used by another app: %@" = "Bu kısayollar başka bir uygulama tarafından kullanılıyor: %@";
 "OK" = "Tamam";
+"Could not open the captures folder" = "Ekran görüntüleri klasörü açılamadı";

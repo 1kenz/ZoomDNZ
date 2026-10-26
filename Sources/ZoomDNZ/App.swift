@@ -4,6 +4,10 @@ import Carbon.HIToolbox
 @main
 struct ZoomDNZApp {
     @MainActor static func main() {
+        #if DEBUG
+        if CommandLine.arguments.contains("--self-test") { exit(SelfTest.run()) }
+        #endif
+
         // Single instance: quit silently if another copy is already running.
         let bundleID = Bundle.main.bundleIdentifier ?? "com.dnz.ZoomDNZ"
         let myPID = ProcessInfo.processInfo.processIdentifier
@@ -95,7 +99,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     @objc private func captureArea() { CaptureController.begin() }
 
     @objc private func openFolder() {
-        NSWorkspace.shared.open(Storage.capturesDirectory())
+        do {
+            NSWorkspace.shared.open(try Storage.preparedCapturesDirectory())
+        } catch {
+            Alerts.error(L("Could not open the captures folder"), error.localizedDescription)
+        }
     }
 
     @objc private func showShortcuts() { ShortcutsWindow.show() }
