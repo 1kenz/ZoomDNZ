@@ -1,0 +1,15 @@
+.build/
+build/
+.DS_Store
+*.xcuserstate
+
+# Secrets and signing material must never be committed
+.env
+.env.*
+!.env.example
+*.pem
+*.p12
+*.p8
+*.key
+*.mobileprovision
+*.cer
