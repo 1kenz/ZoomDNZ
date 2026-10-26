@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ZoomDNZ – screenshots, zoom and drawing for macOS</title>
+<meta name="description" content="ZoomDNZ is a free, offline macOS menu-bar app: Lightshot-style area screenshots plus ZoomIt-style screen zoom and live drawing. Universal binary, no cloud, no accounts.">
+<link rel="canonical" href="https://1kenz.github.io/ZoomDNZ/">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="ZoomDNZ – screenshots, zoom and drawing for macOS">
+<meta property="og:description" content="Capture an area, zoom the screen, draw on it. A small offline menu-bar app for Apple Silicon and Intel Macs.">
+<meta property="og:url" content="https://1kenz.github.io/ZoomDNZ/">
+<meta property="og:image" content="https://1kenz.github.io/ZoomDNZ/assets/icon.png">
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"ZoomDNZ","applicationCategory":"UtilitiesApplication","operatingSystem":"macOS 14 or later","description":"Offline macOS menu-bar app for area screenshots, screen zoom and on-screen drawing.","url":"https://1kenz.github.io/ZoomDNZ/","downloadUrl":"https://github.com/1kenz/ZoomDNZ","license":"https://opensource.org/licenses/MIT","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"author":{"@type":"Organization","name":"DNZ Security & Software"}}
+</script>
+<style>
+:root{
+  --paper:#F4F6FB; --surface:#FFFFFF; --ink:#0E1726; --muted:#55627A; --line:#D9DFEC;
+  --blue:#2457F5; --blue-ink:#FFFFFF; --pen:#FF8A1F; --hud:#141B2D; --hud-ink:#E8EDFA;
+  --wall-a:#CFE0FF; --wall-b:#F3E4FF; --win:#FFFFFF; --win-line:#E3E8F3; --code:#EEF2FB;
+  --radius:14px;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --paper:#0A0F1C; --surface:#121A2C; --ink:#EEF2FC; --muted:#9AA7C2; --line:#222D47;
+    --blue:#6D8DFF; --blue-ink:#0A0F1C; --win:#1A2338; --win-line:#2A3552; --code:#0F1627;
+    --wall-a:#1B2A55; --wall-b:#3A2358;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font:17px/1.6 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--blue);outline-offset:3px;border-radius:6px}
+.wrap{max-width:1160px;margin:0 auto;padding:0 24px}
+h1,h2,h3{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.08;letter-spacing:-.025em;margin:0}
+h1{font-size:clamp(2.5rem,5.6vw,4.4rem);font-weight:800}
+h2{font-size:clamp(1.8rem,3.4vw,2.6rem);font-weight:760;max-width:18ch}
+h3{font-size:1.15rem;font-weight:680;letter-spacing:-.01em;line-height:1.25}
+p{margin:0}
+.lede{font-size:1.2rem;color:var(--muted);max-width:34em}
+
+/* top bar */
+header.topbar{display:flex;align-items:center;justify-content:space-between;padding:20px 0}
+.brand{display:flex;align-items:center;gap:12px;font-weight:720;letter-spacing:-.01em;text-decoration:none}
+.brand img{width:36px;height:36px;border-radius:9px}
+nav a{margin-left:22px;text-decoration:none;color:var(--muted);font-size:.95rem}
+nav a:hover{color:var(--ink)}
+@media (max-width:640px){nav a.hide-s{display:none}}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:56px;align-items:center;padding:40px 0 88px}
+@media (max-width:960px){.hero{grid-template-columns:1fr;gap:40px;padding-bottom:64px}}
+.hero p.lede{margin-top:22px}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:13px 22px;border-radius:12px;font-weight:650;
+  text-decoration:none;border:1.5px solid var(--ink);transition:transform .15s,background .15s}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:var(--blue-ink)}
+.btn:hover{transform:translateY(-2px)}
+.facts{display:flex;flex-wrap:wrap;gap:8px 22px;margin:28px 0 0;padding:0;list-style:none;color:var(--muted);font-size:.95rem}
+.facts li::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--pen);margin-right:9px;vertical-align:1px}
+
+/* live demo */
+.demo{position:relative}
+.stage{position:relative;aspect-ratio:16/10;border-radius:18px;overflow:hidden;border:1px solid var(--line);
+  background:linear-gradient(135deg,var(--wall-a),var(--wall-b));
+  box-shadow:0 30px 60px -28px rgba(14,23,38,.45),0 2px 0 rgba(255,255,255,.4) inset;touch-action:none;user-select:none;-webkit-user-select:none}
+.layer{position:absolute;inset:0;transform-origin:0 0;will-change:transform}
+.layer.pan{transition:none}
+.menubar{position:absolute;left:0;right:0;top:0;height:6.2%;min-height:18px;background:rgba(255,255,255,.45);
+  backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:flex-end;padding:0 3%;gap:10px;font-size:11px;color:#0E1726;z-index:2}
+@media (prefers-color-scheme:dark){.menubar{background:rgba(10,15,28,.55);color:#EEF2FC}}
+.menubar svg{width:13px;height:13px}
+.win{position:absolute;left:7%;top:13%;width:62%;height:72%;background:var(--win);border:1px solid var(--win-line);
+  border-radius:10px;box-shadow:0 14px 30px -14px rgba(0,0,0,.35);overflow:hidden}
+.win .tl{height:9%;min-height:16px;display:flex;align-items:center;gap:5px;padding:0 3%;border-bottom:1px solid var(--win-line)}
+.win .tl i{width:8px;height:8px;border-radius:50%;background:#FF5F57}.win .tl i:nth-child(2){background:#FEBC2E}.win .tl i:nth-child(3){background:#28C840}
+.win .body{height:91%;padding:4%;display:grid;grid-template-rows:56% auto auto auto;gap:4%;align-content:start}
+.row{display:flex;align-items:flex-end;gap:3%;min-height:0}
+.row .cbar{flex:1;background:var(--blue);border-radius:4px 4px 0 0;opacity:.85}
+.line{height:7px;border-radius:4px;background:var(--code)}
+.panel{position:absolute;right:5%;top:20%;width:22%;height:34%;background:var(--win);border:1px solid var(--win-line);
+  border-radius:10px;box-shadow:0 14px 30px -14px rgba(0,0,0,.35);padding:2.4%;display:grid;gap:7px;align-content:start}
+.panel b{display:block;font-size:clamp(14px,2.4vw,26px);letter-spacing:-.03em}
+.panel small{color:var(--muted);font-size:10px}
+canvas{position:absolute;inset:0;width:100%;height:100%;z-index:3}
+.stage[data-mode="draw"] canvas,.stage[data-mode="capture"] canvas{cursor:crosshair}
+.stage[data-mode="zoom"] canvas{cursor:zoom-in}
+.hint{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:5;background:var(--hud);color:var(--hud-ink);
+  font-size:13px;padding:7px 14px;border-radius:999px;white-space:nowrap;box-shadow:0 8px 20px -8px rgba(0,0,0,.5);pointer-events:none;max-width:92%;overflow:hidden;text-overflow:ellipsis}
+.hud{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:16px}
+.seg{display:inline-flex;background:var(--hud);border-radius:12px;padding:4px;gap:2px}
+.seg button{all:unset;cursor:pointer;color:var(--hud-ink);padding:8px 14px;border-radius:9px;font-size:.92rem;font-weight:620}
+.seg button[aria-pressed="true"]{background:var(--blue);color:var(--blue-ink)}
+.seg button:hover:not([aria-pressed="true"]){background:rgba(255,255,255,.1)}
+.seg button:focus-visible{outline:3px solid var(--pen);outline-offset:1px}
+.swatches{display:inline-flex;gap:8px;margin-left:6px}
+.swatches button{all:unset;cursor:pointer;width:22px;height:22px;border-radius:50%;border:2px solid var(--paper);box-shadow:0 0 0 1.5px var(--line)}
+.swatches button[aria-pressed="true"]{box-shadow:0 0 0 2.5px var(--ink)}
+.swatches button:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+.clear{all:unset;cursor:pointer;color:var(--muted);font-size:.92rem;padding:8px 10px;border-radius:8px}
+.clear:hover{color:var(--ink)}
+.demo-note{font-size:.85rem;color:var(--muted);margin-top:10px}
+
+/* sections */
+section{padding:84px 0;border-top:1px solid var(--line)}
+section .intro{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:56px;align-items:end;margin-bottom:48px}
+@media (max-width:860px){section .intro{grid-template-columns:1fr;gap:16px}}
+kbd{font:600 .92em ui-monospace,"SF Mono",Menlo,monospace;background:var(--surface);border:1px solid var(--line);
+  border-bottom-width:3px;border-radius:7px;padding:2px 8px;white-space:nowrap}
+.keys{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media (max-width:860px){.keys{grid-template-columns:1fr}}
+.key{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:26px}
+.key .combo{display:flex;gap:6px;margin-bottom:18px}
+.key .combo kbd{font-size:1.15rem;padding:6px 12px}
+.key p{color:var(--muted);margin-top:8px}
+
+.features{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 56px}
+@media (max-width:860px){.features{grid-template-columns:1fr}}
+.feature{padding:22px 0;border-bottom:1px solid var(--line)}
+.feature p{color:var(--muted);margin-top:6px}
+
+.privacy{background:var(--hud);color:var(--hud-ink);border-radius:24px;padding:56px;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:48px;border:0}
+@media (max-width:860px){.privacy{grid-template-columns:1fr;padding:32px 24px;gap:28px}}
+.privacy h2{max-width:14ch}
+.privacy p{color:#B7C2DD}
+.proof{list-style:none;margin:0;padding:0;display:grid;gap:14px}
+.proof li{padding:14px 0 14px 34px;border-bottom:1px solid rgba(255,255,255,.12);position:relative;color:#DCE4F7}
+.proof li::before{content:"";position:absolute;left:0;top:19px;width:16px;height:9px;border-left:3px solid var(--pen);border-bottom:3px solid var(--pen);transform:rotate(-45deg)}
+.privacy-wrap{padding:84px 24px;border-top:1px solid var(--line)}
+
+ol.steps{list-style:none;margin:0;padding:0;display:grid;gap:18px;counter-reset:s;max-width:760px}
+ol.steps li{counter-increment:s;display:grid;grid-template-columns:44px 1fr;gap:18px;align-items:start}
+ol.steps li::before{content:counter(s);display:grid;place-items:center;width:44px;height:44px;border-radius:50%;
+  background:var(--blue);color:var(--blue-ink);font-weight:760}
+ol.steps p{color:var(--muted);margin-top:4px}
+pre{margin:12px 0 0;background:var(--hud);color:var(--hud-ink);border-radius:12px;padding:16px 18px;overflow:auto;
+  font:.92rem/1.55 ui-monospace,"SF Mono",Menlo,monospace}
+.langs{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.langs span{border:1.5px solid var(--line);border-radius:999px;padding:6px 16px;font-weight:620}
+footer{border-top:1px solid var(--line);padding:36px 0 56px;color:var(--muted);font-size:.95rem}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="topbar">
+    <a class="brand" href="#top"><img src="assets/icon.png" alt="" width="36" height="36">ZoomDNZ</a>
+    <nav aria-label="Primary">
+      <a class="hide-s" href="#shortcuts">Shortcuts</a>
+      <a class="hide-s" href="#privacy">Privacy</a>
+      <a class="hide-s" href="#install">Install</a>
+      <a href="https://github.com/1kenz/ZoomDNZ">GitHub</a>
+    </nav>
+  </header>
+
+  <main id="top">
+  <div class="hero">
+    <div>
+      <h1>Capture, zoom and draw on your Mac screen</h1>
+      <p class="lede">A small menu-bar app for presenters, teachers and support teams. Select an area, magnify the screen, mark it up live. Everything stays on your Mac.</p>
+      <div class="cta">
+        <a class="btn primary" href="#install">Install ZoomDNZ</a>
+        <a class="btn" href="https://github.com/1kenz/ZoomDNZ">View source on GitHub</a>
+      </div>
+      <ul class="facts">
+        <li>Apple Silicon and Intel</li>
+        <li>macOS 14 or later</li>
+        <li>Free, MIT license</li>
+      </ul>
+    </div>
+
+    <div class="demo">
+      <div class="stage" id="stage" data-mode="capture">
+        <div class="layer" id="layer">
+          <div class="menubar" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+            <span>Mon 9:41</span>
+          </div>
+          <div class="win" aria-hidden="true">
+            <div class="tl"><i></i><i></i><i></i></div>
+            <div class="body">
+              <div class="row"><div class="cbar" style="height:38%"></div><div class="cbar" style="height:62%"></div><div class="cbar" style="height:48%"></div><div class="cbar" style="height:86%"></div><div class="cbar" style="height:70%"></div><div class="cbar" style="height:100%"></div></div>
+              <div class="line" style="width:82%"></div><div class="line" style="width:64%"></div><div class="line" style="width:74%"></div>
+            </div>
+          </div>
+          <div class="panel" aria-hidden="true"><small>Open tickets</small><b>128</b><div class="line" style="width:90%"></div><div class="line" style="width:60%"></div></div>
+          <canvas id="cv" aria-label="Interactive demo area. Choose a mode below, then use the pointer." role="img"></canvas>
+        </div>
+        <div class="hint" id="hint" role="status" aria-live="polite"></div>
+      </div>
+      <div class="hud">
+        <div class="seg" role="group" aria-label="Demo mode">
+          <button type="button" data-mode="capture" aria-pressed="true">Capture</button>
+          <button type="button" data-mode="zoom" aria-pressed="false">Zoom</button>
+          <button type="button" data-mode="draw" aria-pressed="false">Draw</button>
+        </div>
+        <div class="swatches" role="group" aria-label="Pen color">
+          <button type="button" style="background:#FF8A1F" data-c="#FF8A1F" aria-pressed="true" aria-label="Orange"></button>
+          <button type="button" style="background:#E5384B" data-c="#E5384B" aria-pressed="false" aria-label="Red"></button>
+          <button type="button" style="background:#2457F5" data-c="#2457F5" aria-pressed="false" aria-label="Blue"></button>
+        </div>
+        <button type="button" class="clear" id="clear">Clear</button>
+      </div>
+      <p class="demo-note">This is a live preview in your browser. The real app does the same on your actual screen.</p>
+    </div>
+  </div>
+  </main>
+
+  <section id="shortcuts">
+    <div class="intro">
+      <h2>Three shortcuts. No setup.</h2>
+      <p class="lede">They work from any app and need no Accessibility permission. The full list is one click away in the menu bar.</p>
+    </div>
+    <div class="keys">
+      <div class="key"><div class="combo"><kbd>⌃</kbd><kbd>⌥</kbd><kbd>A</kbd></div><h3>Capture an area</h3>
+        <p>Drag to select, then move or resize. Annotate, then copy, save, pin to the screen or copy the text inside it.</p></div>
+      <div class="key"><div class="combo"><kbd>⌃</kbd><kbd>⌥</kbd><kbd>Z</kbd></div><h3>Zoom the screen</h3>
+        <p>Freeze and magnify. The mouse pans, the wheel zooms, a click pins the view so you can draw.</p></div>
+      <div class="key"><div class="combo"><kbd>⌃</kbd><kbd>⌥</kbd><kbd>D</kbd></div><h3>Draw on the screen</h3>
+        <p>Pen, highlighter and shapes in six colors, plus whiteboard and blackboard modes.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="intro">
+      <h2>Made for explaining things</h2>
+      <p class="lede">Every tool is there because someone needs to show what they mean on a real screen.</p>
+    </div>
+    <div class="features">
+      <div class="feature"><h3>Annotate before you share</h3><p>Pen, line, arrow, rectangle, highlighter, text and numbered steps on any capture.</p></div>
+      <div class="feature"><h3>Hide what is private</h3><p>Blur passwords, names and numbers before the screenshot leaves your clipboard.</p></div>
+      <div class="feature"><h3>Copy text from images</h3><p>On-device text recognition turns any selected area into text you can paste.</p></div>
+      <div class="feature"><h3>Pin a screenshot</h3><p>Keep a capture floating above your windows while you work from it.</p></div>
+      <div class="feature"><h3>Pen pressure on tablets</h3><p>Stroke width follows how hard you press with a tablet pen.</p></div>
+      <div class="feature"><h3>Looks like a Mac app</h3><p>SF Symbols, a native floating toolbar and menus in English, Türkçe and Deutsch.</p></div>
+    </div>
+    <div class="langs" aria-label="Languages"><span>English</span><span>Türkçe</span><span>Deutsch</span></div>
+  </section>
+</div>
+
+<div class="wrap privacy-wrap" id="privacy">
+  <div class="privacy">
+    <div>
+      <h2>Nothing leaves your Mac</h2>
+      <p style="margin-top:18px">Screenshots can contain passwords, tickets and customer data. ZoomDNZ was built so they never have to go anywhere. This page loads no fonts, scripts or trackers either.</p>
+    </div>
+    <ul class="proof">
+      <li>No network code. The running app holds no network connection.</li>
+      <li>No account, no cloud, no telemetry, no third-party libraries.</li>
+      <li>Screenshots save to a private folder in Documents that only you can read.</li>
+      <li>Hardened runtime on, and the source is open for anyone to audit.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="wrap">
+  <section id="install" style="border-top:0">
+    <div class="intro">
+      <h2>Build it in two minutes</h2>
+      <p class="lede">There is no installer yet. You compile it once with Apple’s free command line tools and drag the app to Applications.</p>
+    </div>
+    <ol class="steps">
+      <li><div><h3>Get the tools and the code</h3>
+        <pre>xcode-select --install
+git clone https://github.com/1kenz/ZoomDNZ.git
+cd ZoomDNZ</pre></div></li>
+      <li><div><h3>Build and open</h3>
+        <pre>./build.sh
+open build/ZoomDNZ.app</pre>
+        <p>The build creates one universal app that runs on both Apple Silicon and Intel Macs.</p></div></li>
+      <li><div><h3>Allow screen recording</h3>
+        <p>Open System Settings › Privacy &amp; Security › Screen Recording, switch ZoomDNZ on, then reopen the app. macOS asks once because the app can only see your screen with this permission.</p></div></li>
+    </ol>
+  </section>
+</div>
+
+<footer>
+  <div class="wrap">
+    <span>ZoomDNZ by DNZ Security &amp; Software. MIT license.</span>
+    <span><a href="https://github.com/1kenz/ZoomDNZ">Source</a> · <a href="https://github.com/1kenz/ZoomDNZ/issues">Report an issue</a></span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var stage=document.getElementById('stage'), layer=document.getElementById('layer'),
+      cv=document.getElementById('cv'), ctx=cv.getContext('2d'), hint=document.getElementById('hint');
+  var mode='capture', color='#FF8A1F', strokes=[], cur=null, sel=null, drag=null, zoom=1, pinned=false;
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var hints={
+    capture:'Drag to select an area',
+    zoom:'Move to pan, scroll or click to pin and draw',
+    draw:'Draw with the pen'
+  };
+
+  function size(){
+    var r=stage.getBoundingClientRect(), d=window.devicePixelRatio||1;
+    cv.width=Math.round(stage.offsetWidth*d); cv.height=Math.round(stage.offsetHeight*d); render();
+  }
+  function pt(e){
+    var r=cv.getBoundingClientRect();
+    return {x:(e.clientX-r.left)/r.width*cv.width, y:(e.clientY-r.top)/r.height*cv.height};
+  }
+  function setHint(t){hint.textContent=t;hint.style.display=t?'':'none'}
+  function setMode(m){
+    mode=m; stage.dataset.mode=m; zoom=1; pinned=false; sel=null; layer.style.transform='';
+    document.querySelectorAll('.seg button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.mode===m)});
+    setHint(hints[m]); render();
+  }
+  function stroke(c,s,sc){
+    c.lineJoin=c.lineCap='round'; c.strokeStyle=s.c; c.lineWidth=(s.w||4)*sc; c.beginPath();
+    s.p.forEach(function(p,i){i?c.lineTo(p.x,p.y):c.moveTo(p.x,p.y)});
+    if(s.p.length===1)c.lineTo(s.p[0].x+.1,s.p[0].y); c.stroke();
+  }
+  function render(){
+    var d=cv.width/stage.offsetWidth; ctx.clearRect(0,0,cv.width,cv.height);
+    strokes.concat(cur?[cur]:[]).forEach(function(s){stroke(ctx,s,d)});
+    if(mode==='capture'&&sel){
+      var x=Math.min(sel.x0,sel.x1),y=Math.min(sel.y0,sel.y1),w=Math.abs(sel.x1-sel.x0),h=Math.abs(sel.y1-sel.y0);
+      ctx.save(); ctx.fillStyle='rgba(8,12,24,.55)';
+      ctx.beginPath(); ctx.rect(0,0,cv.width,cv.height); ctx.rect(x,y,w,h); ctx.fill('evenodd'); ctx.restore();
+      ctx.lineWidth=1.5*d; ctx.strokeStyle='#fff'; ctx.strokeRect(x,y,w,h);
+      ctx.fillStyle='#fff'; ctx.strokeStyle='#2457F5';
+      [[x,y],[x+w,y],[x,y+h],[x+w,y+h],[x+w/2,y],[x+w/2,y+h],[x,y+h/2],[x+w,y+h/2]].forEach(function(q){
+        ctx.beginPath(); ctx.arc(q[0],q[1],4*d,0,7); ctx.fill(); ctx.stroke();
+      });
+      if(w>40*d){ ctx.font=(12*d)+'px -apple-system,Segoe UI,sans-serif'; ctx.fillStyle='#fff';
+        ctx.fillText(Math.round(w/d)+' × '+Math.round(h/d),x,Math.max(14*d,y-8*d)); }
+    }
+  }
+  function panTo(e){
+    if(mode!=='zoom'||pinned)return;
+    var r=stage.getBoundingClientRect(), fx=(e.clientX-r.left)/r.width, fy=(e.clientY-r.top)/r.height;
+    layer.style.transform='scale('+zoom+')'; layer.style.transformOrigin=(fx*100)+'% '+(fy*100)+'%';
+  }
+  function applyZoom(){
+    if(!layer.style.transformOrigin||layer.style.transformOrigin==='0px 0px')layer.style.transformOrigin='50% 50%';
+    layer.style.transform='scale('+zoom+')';
+  }
+
+  cv.addEventListener('pointerdown',function(e){
+    cv.setPointerCapture(e.pointerId); var p=pt(e);
+    if(mode==='zoom'&&!pinned){ pinned=true; mode='draw'; stage.dataset.mode='draw';
+      document.querySelectorAll('.seg button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.mode==='draw')});
+      setHint('Pinned. Draw now, or choose Zoom to start over'); return; }
+    if(mode==='capture'){ sel={x0:p.x,y0:p.y,x1:p.x,y1:p.y}; drag=true; setHint(''); }
+    else if(mode==='draw'){ var d=cv.width/stage.offsetWidth; cur={c:color,w:4/(zoom>1?zoom:1),p:[p]}; drag=true; setHint(''); }
+    render();
+  });
+  cv.addEventListener('pointermove',function(e){
+    if(!drag){ panTo(e); return; }
+    var p=pt(e);
+    if(mode==='capture'&&sel){sel.x1=p.x;sel.y1=p.y}
+    else if(cur){cur.p.push(p)}
+    render();
+  });
+  function end(){
+    if(!drag)return; drag=false;
+    if(cur){strokes.push(cur);cur=null}
+    if(mode==='capture'&&sel){ var w=Math.abs(sel.x1-sel.x0); if(w<8){sel=null;setHint(hints.capture)} else setHint('In the app: copy, save, pin or copy text'); }
+    render();
+  }
+  cv.addEventListener('pointerup',end); cv.addEventListener('pointercancel',end);
+  stage.addEventListener('wheel',function(e){
+    if(mode!=='zoom'||pinned)return; e.preventDefault();
+    zoom=Math.min(4,Math.max(1.25,zoom*(e.deltaY<0?1.12:.9))); panTo(e); applyZoom();
+  },{passive:false});
+
+  document.querySelectorAll('.seg button').forEach(function(b){b.addEventListener('click',function(){
+    setMode(b.dataset.mode); if(b.dataset.mode==='zoom'){zoom=2; applyZoom();}
+  })});
+  document.querySelectorAll('.swatches button').forEach(function(b){b.addEventListener('click',function(){
+    color=b.dataset.c; document.querySelectorAll('.swatches button').forEach(function(x){x.setAttribute('aria-pressed',x===b)});
+  })});
+  document.getElementById('clear').addEventListener('click',function(){strokes=[];cur=null;sel=null;render()});
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&mode!=='capture'){setMode('capture')} });
+  window.addEventListener('resize',size);
+  size(); setHint(hints.capture);
+  // Opening gesture: one demo stroke draws itself once, unless the visitor prefers less motion.
+  if(!reduce){
+    var path=[[.12,.80],[.22,.74],[.34,.80],[.46,.72],[.58,.78]], i=0;
+    setTimeout(function(){
+      var d=cv.width/stage.offsetWidth, s={c:'#FF8A1F',w:4,p:[]}; cur=s;
+      (function step(){ if(drag)return; if(i>=path.length){ strokes.push(s); if(cur===s)cur=null; render(); return; }
+        s.p.push({x:path[i][0]*cv.width,y:path[i][1]*cv.height}); i++; render(); setTimeout(step,160); })();
+    },700);
+  }
+})();
+</script>
+</body>
+</html>
