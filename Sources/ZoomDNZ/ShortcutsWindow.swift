@@ -40,6 +40,7 @@ private let sections: [ShortcutSection] = [
         ShortcutItem(keys: ["R", "G", "B", "O", "Y", "P"], title: L("Red, green, blue, orange, yellow, pink")),
         ShortcutItem(keys: ["H"], title: L("Highlighter")),
         ShortcutItem(keys: ["T"], title: L("Add text (finish with Enter)")),
+        ShortcutItem(keys: ["X"], title: L("Eraser: drag over a drawing to remove it")),
         ShortcutItem(keys: ["Shift", L("Drag")], title: L("Straight line")),
         ShortcutItem(keys: ["⌘", L("Drag")], title: L("Rectangle")),
         ShortcutItem(keys: ["⌘", "Shift", L("Drag")], title: L("Arrow")),

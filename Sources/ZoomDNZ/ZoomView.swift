@@ -21,6 +21,9 @@ final class ZoomView: NSView, NSTextFieldDelegate {
     var board: Board = .none
     var annotations: [Annotation] = []
     var current: Annotation?
+    private var history: [[Annotation]] = []   // snapshots for undo (draw, erase, clear)
+    private var erasedAny = false
+    private var erasing = false               // an erase gesture is in progress
     var tool: Tool = .pen { didSet { refreshBar() } }
     var color: NSColor = .systemRed
     var lineWidth: CGFloat = 4
@@ -94,7 +97,7 @@ final class ZoomView: NSView, NSTextFieldDelegate {
         drawScene(ctx)
 
         if mode == .draw && cursorHidden {
-            let r = max(4, lineWidth * zoom / 2)
+            let r = tool == .eraser ? eraserRadius * zoom : max(4, lineWidth * zoom / 2)
             let rect = CGRect(x: mouse.x - r, y: mouse.y - r, width: 2 * r, height: 2 * r)
             let outer = NSBezierPath(ovalIn: rect.insetBy(dx: -1.5, dy: -1.5))
             outer.lineWidth = 1
@@ -118,6 +121,29 @@ final class ZoomView: NSView, NSTextFieldDelegate {
         }
     }
 
+    // MARK: - Eraser and undo history
+
+    private var eraserRadius: CGFloat { max(8, lineWidth * 3) / zoom }
+
+    private func remember() {
+        history.append(annotations)
+        if history.count > 50 { history.removeFirst() }
+    }
+
+    private func erase(at p: CGPoint) {
+        let radius = eraserRadius
+        let before = annotations.count
+        annotations.removeAll { $0.hits(p, radius: radius) }
+        if annotations.count != before { erasedAny = true; needsDisplay = true }
+    }
+
+    private func clearAll() {
+        guard !annotations.isEmpty else { return }
+        remember()
+        annotations.removeAll()
+        needsDisplay = true
+    }
+
     private func showBadge(_ text: String) {
         badgeText = text
         badgeUntil = Date().addingTimeInterval(1.5)
@@ -137,7 +163,7 @@ final class ZoomView: NSView, NSTextFieldDelegate {
 
     /// Like ZoomIt: Shift = line, ⌘ = rectangle, ⌘+Shift = arrow, Tab held = ellipse.
     private func effectiveTool(_ e: NSEvent) -> Tool {
-        if tool == .text { return .text }
+        if tool == .text || tool == .eraser { return tool }
         let f = e.modifierFlags
         if f.contains(.command) && f.contains(.shift) { return .arrow }
         if f.contains(.command) { return .rect }
@@ -170,7 +196,12 @@ final class ZoomView: NSView, NSTextFieldDelegate {
         }
         let t = effectiveTool(e)
         let ip = toImage(mouse)
-        if t == .text {
+        if t == .eraser {
+            remember()
+            erasing = true
+            erasedAny = false
+            erase(at: ip)
+        } else if t == .text {
             beginText(atView: mouse, image: ip)
         } else {
             current = Annotation(tool: t, points: [ip], widths: [penWidth(pressure(e))], color: color, width: lineWidth)
@@ -180,6 +211,12 @@ final class ZoomView: NSView, NSTextFieldDelegate {
 
     override func mouseDragged(with e: NSEvent) {
         mouse = convert(e.locationInWindow, from: nil)
+        if erasing {
+            erase(at: toImage(mouse))
+            updateBar()
+            needsDisplay = true
+            return
+        }
         if var c = current {
             let q = toImage(mouse)
             if c.tool == .pen || c.tool == .freeMarker {
@@ -195,9 +232,13 @@ final class ZoomView: NSView, NSTextFieldDelegate {
     }
 
     override func mouseUp(with e: NSEvent) {
+        if erasing {
+            erasing = false
+            if !erasedAny { _ = history.popLast() }   // nothing was erased: no undo step
+        }
         if let c = current {
             let moved = hypot(c.end.x - c.start.x, c.end.y - c.start.y)
-            if c.tool == .pen || c.tool == .freeMarker || moved > 2 { annotations.append(c) }
+            if c.tool == .pen || c.tool == .freeMarker || moved > 2 { remember(); annotations.append(c) }
         }
         current = nil
         needsDisplay = true
@@ -264,7 +305,8 @@ final class ZoomView: NSView, NSTextFieldDelegate {
         case "t": tool = .text
         case "w": toggleBoard(.white)
         case "k": toggleBoard(.black)
-        case "e": annotations.removeAll(); needsDisplay = true
+        case "e": clearAll()
+        case "x": tool = .eraser
         default: break
         }
     }
@@ -297,6 +339,7 @@ final class ZoomView: NSView, NSTextFieldDelegate {
         f.removeFromSuperview()
         textField = nil
         if !t.isEmpty {
+            remember()
             annotations.append(Annotation(tool: .text, points: [textOrigin], color: color, width: lineWidth, text: t))
         }
         window?.makeFirstResponder(self)
@@ -319,7 +362,8 @@ final class ZoomView: NSView, NSTextFieldDelegate {
             (.arrow, "arrow.up.right", L("Arrow (draw while holding ⌘+Shift)")),
             (.rect, "rectangle", L("Rectangle (draw while holding ⌘)")),
             (.ellipse, "circle", L("Ellipse (draw while holding Tab)")),
-            (.text, "textformat", L("Text (T)"))
+            (.text, "textformat", L("Text (T)")),
+            (.eraser, "eraser", L("Eraser (X)"))
         ]
         var views: [NSView] = []
         for d in defs {
@@ -393,11 +437,11 @@ final class ZoomView: NSView, NSTextFieldDelegate {
     }
     @objc private func undoTapped() {
         if textField != nil { return }
-        if !annotations.isEmpty { annotations.removeLast(); needsDisplay = true }
+        if let previous = history.popLast() { annotations = previous; needsDisplay = true }
     }
     @objc private func whiteTapped() { toggleBoard(.white) }
     @objc private func blackTapped() { toggleBoard(.black) }
-    @objc private func clearTapped() { annotations.removeAll(); needsDisplay = true }
+    @objc private func clearTapped() { clearAll() }
     @objc private func closeTapped() { controller?.close() }
 
     // MARK: - Export

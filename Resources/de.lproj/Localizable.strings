@@ -88,3 +88,6 @@
 "These shortcuts are already used by another app: %@" = "Diese Tastenkürzel werden bereits von einer anderen App verwendet: %@";
 "OK" = "OK";
 "Could not open the captures folder" = "Der Ordner mit den Bildschirmfotos konnte nicht geöffnet werden";
+"Eraser (X)" = "Radierer (X)";
+"Eraser" = "Radierer";
+"Eraser: drag over a drawing to remove it" = "Radierer: zum Entfernen über eine Zeichnung ziehen";

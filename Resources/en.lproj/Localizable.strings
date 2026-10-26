@@ -88,3 +88,6 @@
 "These shortcuts are already used by another app: %@" = "These shortcuts are already used by another app: %@";
 "OK" = "OK";
 "Could not open the captures folder" = "Could not open the captures folder";
+"Eraser (X)" = "Eraser (X)";
+"Eraser" = "Eraser";
+"Eraser: drag over a drawing to remove it" = "Eraser: drag over a drawing to remove it";

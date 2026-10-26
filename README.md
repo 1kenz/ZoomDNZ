@@ -40,11 +40,11 @@ It is built for presenters, teachers, support engineers and anyone who explains 
 
 ## Features
 
-**Capture area**: select, move and resize a region, then annotate it with pen, line, arrow, rectangle, highlighter, text, numbered steps or blur. Copy it, save it, pin it to the screen, or copy its text with on-device OCR.
+**Capture area**: select, move and resize a region, then annotate it with pen, line, arrow, rectangle, highlighter, text, numbered steps or blur, and erase mistakes with the eraser. Copy it, save it, pin it to the screen, or copy its text with on-device OCR.
 
 **Still zoom**: freeze and magnify the screen. The mouse pans, the wheel zooms, a click pins the view and starts drawing, and a right-click steps back to zoom.
 
-**Draw on screen**: colors, highlighter, shapes, whiteboard and blackboard modes, and a toolbar that hides itself when you do not need it.
+**Draw on screen**: colors, highlighter, shapes, an eraser (`X`), whiteboard and blackboard modes, and a toolbar that hides itself when you do not need it.
 
 ## Shortcuts
 

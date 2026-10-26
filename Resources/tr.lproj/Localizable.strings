@@ -88,3 +88,6 @@
 "These shortcuts are already used by another app: %@" = "Bu kısayollar başka bir uygulama tarafından kullanılıyor: %@";
 "OK" = "Tamam";
 "Could not open the captures folder" = "Ekran görüntüleri klasörü açılamadı";
+"Eraser (X)" = "Silgi (X)";
+"Eraser" = "Silgi";
+"Eraser: drag over a drawing to remove it" = "Silgi: silmek için çizimin üzerinden sürükleyin";

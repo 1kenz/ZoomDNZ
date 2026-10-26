@@ -35,6 +35,19 @@ enum SelfTest {
         check(b.points == [CGPoint(x: 11, y: 1), CGPoint(x: 13, y: 3)], "translate moves every point")
 
         check(Annotation(tool: .line, color: .red, width: 2).rect == .zero, "empty annotation has zero rect")
+
+        let line = Annotation(tool: .line, points: [CGPoint(x: 0, y: 0), CGPoint(x: 100, y: 0)], color: .red, width: 2)
+        check(line.hits(CGPoint(x: 50, y: 5), radius: 8) && !line.hits(CGPoint(x: 50, y: 30), radius: 8),
+              "eraser hits a line only near it")
+        let box = Annotation(tool: .rect, points: [CGPoint(x: 0, y: 0), CGPoint(x: 100, y: 100)], color: .red, width: 2)
+        check(box.hits(CGPoint(x: 1, y: 50), radius: 8) && !box.hits(CGPoint(x: 50, y: 50), radius: 8),
+              "eraser hits a rectangle outline, not its empty middle")
+        let blur = Annotation(tool: .blur, points: [CGPoint(x: 0, y: 0), CGPoint(x: 100, y: 100)], color: .red, width: 2)
+        check(blur.hits(CGPoint(x: 50, y: 50), radius: 8), "eraser hits the inside of a blur box")
+        let pen = Annotation(tool: .pen, points: [CGPoint(x: 0, y: 0), CGPoint(x: 10, y: 0), CGPoint(x: 20, y: 10)],
+                             color: .red, width: 2)
+        check(pen.hits(CGPoint(x: 20, y: 12), radius: 6) && !pen.hits(CGPoint(x: 60, y: 60), radius: 6),
+              "eraser hits a pen stroke only near it")
     }
 
     // MARK: - Storage

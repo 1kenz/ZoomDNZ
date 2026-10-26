@@ -20,6 +20,8 @@ final class OverlayView: NSView, NSTextFieldDelegate {
     var current: Annotation?
 
     var tool: Tool = .move { didSet { refreshBars() } }
+    private var history: [[Annotation]] = []   // snapshots for undo (draw, erase)
+    private var erasedAny = false
     var color: NSColor = .systemRed
     var lineWidth: CGFloat = 3
 
@@ -136,6 +138,7 @@ final class OverlayView: NSView, NSTextFieldDelegate {
 
     private func beginSelection(at p: CGPoint) {
         annotations.removeAll()
+        history.removeAll()
         current = nil
         phase = .selecting
         selection = CGRect(origin: p, size: .zero)
@@ -169,8 +172,14 @@ final class OverlayView: NSView, NSTextFieldDelegate {
         switch tool {
         case .text:
             beginText(at: p)
+        case .eraser:
+            remember()
+            erasedAny = false
+            erase(at: p)
+            drag = .drawing
         case .step:
             let n = annotations.filter { $0.tool == .step }.count + 1
+            remember()
             annotations.append(Annotation(tool: .step, points: [p], color: color, width: lineWidth, number: n))
         case .move:
             break
@@ -196,6 +205,7 @@ final class OverlayView: NSView, NSTextFieldDelegate {
         case .resizing(let h):
             selection = resized(h, clamp(p, to: bounds))
         case .drawing:
+            if tool == .eraser { erase(at: clamp(p, to: selection)); break }
             guard var c = current else { break }
             let q = clamp(p, to: selection)
             if c.tool == .pen {
@@ -227,9 +237,10 @@ final class OverlayView: NSView, NSTextFieldDelegate {
         case .moving, .resizing:
             layoutBars()
         case .drawing:
+            if tool == .eraser && !erasedAny { _ = history.popLast() }   // nothing was erased: no undo step
             if let c = current {
                 let moved = hypot(c.end.x - c.start.x, c.end.y - c.start.y)
-                if c.tool == .pen || moved > 2 { annotations.append(c) }
+                if c.tool == .pen || moved > 2 { remember(); annotations.append(c) }
             }
             current = nil
         case .none:
@@ -269,6 +280,20 @@ final class OverlayView: NSView, NSTextFieldDelegate {
         return CGRect(x: min(minX, maxX), y: min(minY, maxY), width: abs(maxX - minX), height: abs(maxY - minY))
     }
 
+    // MARK: - Eraser and undo history
+
+    private func remember() {
+        history.append(annotations)
+        if history.count > 50 { history.removeFirst() }
+    }
+
+    private func erase(at p: CGPoint) {
+        let radius = max(8, lineWidth * 3)
+        let before = annotations.count
+        annotations.removeAll { $0.hits(p, radius: radius) }
+        if annotations.count != before { erasedAny = true; needsDisplay = true }
+    }
+
     // MARK: - Text
 
     private func beginText(at p: CGPoint) {
@@ -294,6 +319,7 @@ final class OverlayView: NSView, NSTextFieldDelegate {
         f.removeFromSuperview()
         textField = nil
         if !t.isEmpty {
+            remember()
             annotations.append(Annotation(tool: .text, points: [textOrigin], color: color, width: lineWidth, text: t))
         }
         window?.makeFirstResponder(self)
@@ -336,7 +362,8 @@ final class OverlayView: NSView, NSTextFieldDelegate {
             (.marker, "highlighter", L("Highlighter")),
             (.text, "textformat", L("Text")),
             (.step, "1.circle", L("Step number")),
-            (.blur, "squareshape.split.3x3", L("Blur"))
+            (.blur, "squareshape.split.3x3", L("Blur")),
+            (.eraser, "eraser", L("Eraser"))
         ]
         var toolViews: [NSView] = []
         for d in defs {
@@ -431,7 +458,7 @@ final class OverlayView: NSView, NSTextFieldDelegate {
 
     @objc private func undoTapped() {
         if textField != nil { return }
-        if !annotations.isEmpty { annotations.removeLast(); needsDisplay = true }
+        if let previous = history.popLast() { annotations = previous; needsDisplay = true }
     }
 
     @objc private func closeTapped() { controller?.close() }

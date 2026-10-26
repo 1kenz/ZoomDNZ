@@ -1,7 +1,7 @@
 import AppKit
 
 enum Tool: Int {
-    case move, pen, line, arrow, rect, marker, text, step, blur, ellipse, freeMarker
+    case move, pen, line, arrow, rect, marker, text, step, blur, ellipse, freeMarker, eraser
 }
 
 struct Annotation {
@@ -22,6 +22,49 @@ struct Annotation {
 
     mutating func translate(by d: CGPoint) {
         points = points.map { CGPoint(x: $0.x + d.x, y: $0.y + d.y) }
+    }
+
+    /// True when `p` touches this annotation, with `radius` of tolerance (used by the eraser).
+    func hits(_ p: CGPoint, radius: CGFloat) -> Bool {
+        let reach = radius + width / 2
+        switch tool {
+        case .pen, .freeMarker:
+            let extra = tool == .freeMarker ? max(14, width * 5) / 2 : 0
+            if points.count == 1 { return hypot(p.x - start.x, p.y - start.y) <= reach + extra }
+            for i in points.indices.dropFirst()
+            where Self.distance(from: p, toSegment: points[i - 1], points[i]) <= reach + extra { return true }
+            return false
+        case .line, .arrow:
+            return Self.distance(from: p, toSegment: start, end) <= reach
+        case .marker:
+            return Self.distance(from: p, toSegment: start, end) <= radius + max(14, width * 5) / 2
+        case .rect:
+            let outer = rect.insetBy(dx: -reach, dy: -reach)
+            return outer.contains(p) && !rect.insetBy(dx: reach, dy: reach).contains(p)
+        case .blur:
+            return rect.insetBy(dx: -radius, dy: -radius).contains(p)
+        case .ellipse:
+            let a = rect.width / 2, b = rect.height / 2
+            guard a > 1, b > 1 else { return rect.insetBy(dx: -reach, dy: -reach).contains(p) }
+            let d = hypot((p.x - rect.midX) / a, (p.y - rect.midY) / b)
+            return abs(d - 1) * min(a, b) <= reach
+        case .text:
+            let size = max(14, width * 5 + 8)
+            let box = CGRect(x: start.x, y: start.y, width: CGFloat(max(1, text.count)) * size * 0.6, height: size * 1.3)
+            return box.insetBy(dx: -radius, dy: -radius).contains(p)
+        case .step:
+            return hypot(p.x - start.x, p.y - start.y) <= 10 + width * 1.5 + radius
+        case .move, .eraser:
+            return false
+        }
+    }
+
+    private static func distance(from p: CGPoint, toSegment a: CGPoint, _ b: CGPoint) -> CGFloat {
+        let dx = b.x - a.x, dy = b.y - a.y
+        let len2 = dx * dx + dy * dy
+        guard len2 > 0 else { return hypot(p.x - a.x, p.y - a.y) }
+        let t = max(0, min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / len2))
+        return hypot(p.x - (a.x + t * dx), p.y - (a.y + t * dy))
     }
 }
 
@@ -122,7 +165,7 @@ struct SceneRenderer {
             ctx.setStrokeColor(a.color.withAlphaComponent(0.4).cgColor)
             ctx.addLines(between: a.points)
             ctx.strokePath()
-        case .move:
+        case .move, .eraser:
             break
         }
     }
