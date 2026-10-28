@@ -8,12 +8,28 @@ struct ZoomDNZApp {
         if CommandLine.arguments.contains("--self-test") { exit(SelfTest.run()) }
         #endif
 
-        // Single instance: quit silently if another copy is already running.
+        // Single instance: quit silently if an up-to-date copy is already running.
+        // A copy that started before this build was made is stale (typical after ./build.sh): replace it,
+        // otherwise `open` would keep the old version alive and the new build would never appear.
         let bundleID = Bundle.main.bundleIdentifier ?? "com.dnz.ZoomDNZ"
         let myPID = ProcessInfo.processInfo.processIdentifier
         let others = NSRunningApplication.runningApplications(withBundleIdentifier: bundleID)
             .filter { $0.processIdentifier != myPID }
-        if !others.isEmpty { exit(0) }
+        if !others.isEmpty {
+            var builtAt = Date.distantFuture
+            if let url = Bundle.main.executableURL,
+               let d = try? url.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate {
+                builtAt = d
+            }
+            let stale = others.filter { ($0.launchDate ?? .distantFuture) < builtAt }
+            if stale.count != others.count { exit(0) }          // an up-to-date copy is running
+            stale.forEach { $0.terminate() }
+            let deadline = Date().addingTimeInterval(3)
+            while stale.contains(where: { !$0.isTerminated }) && Date() < deadline {
+                RunLoop.current.run(until: Date().addingTimeInterval(0.1))
+            }
+            stale.filter { !$0.isTerminated }.forEach { $0.forceTerminate() }
+        }
 
         let app = NSApplication.shared
         let delegate = AppDelegate()
