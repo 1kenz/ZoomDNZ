@@ -26,7 +26,8 @@ final class ZoomView: NSView, NSTextFieldDelegate {
     private var erasing = false               // an erase gesture is in progress
     var tool: Tool = .pen { didSet { refreshBar() } }
     var color: NSColor = .systemRed
-    var lineWidth: CGFloat = 4
+    var lineWidth: CGFloat = 4 { didSet { widthSlider?.doubleValue = Double(lineWidth) } }
+    private var widthSlider: NSSlider?
 
     private var tabHeld = false
     private var badgeText = ""
@@ -163,7 +164,7 @@ final class ZoomView: NSView, NSTextFieldDelegate {
 
     /// Like ZoomIt: Shift = line, ⌘ = rectangle, ⌘+Shift = arrow, Tab held = ellipse.
     private func effectiveTool(_ e: NSEvent) -> Tool {
-        if tool == .text || tool == .eraser { return tool }
+        if tool == .text || tool == .eraser || tool == .step { return tool }
         let f = e.modifierFlags
         if f.contains(.command) && f.contains(.shift) { return .arrow }
         if f.contains(.command) { return .rect }
@@ -203,6 +204,10 @@ final class ZoomView: NSView, NSTextFieldDelegate {
             erase(at: ip)
         } else if t == .text {
             beginText(atView: mouse, image: ip)
+        } else if t == .step {
+            let n = annotations.filter { $0.tool == .step }.count + 1
+            remember()
+            annotations.append(Annotation(tool: .step, points: [ip], color: color, width: lineWidth, number: n))
         } else {
             current = Annotation(tool: t, points: [ip], widths: [penWidth(pressure(e))], color: color, width: lineWidth)
         }
@@ -262,9 +267,36 @@ final class ZoomView: NSView, NSTextFieldDelegate {
         if mode == .zoom {
             changeZoom(1 + d)
         } else {
-            lineWidth = min(24, max(1, lineWidth + d * 10))
+            adjustWidth(by: d * 10)
+        }
+    }
+
+    /// Text size in points (before zoom), derived from the same thickness setting.
+    private var textPointSize: CGFloat { max(14, lineWidth * 5 + 8) }
+
+    private func adjustWidth(by delta: CGFloat) {
+        lineWidth = min(24, max(1, lineWidth + delta))
+        widthChanged()
+    }
+
+    @objc private func widthSliderChanged(_ s: NSSlider) {
+        lineWidth = CGFloat(s.doubleValue)
+        pinBar()
+        widthChanged()
+    }
+
+    private func widthChanged() {
+        if let f = textField {                       // live preview while typing text
+            let size = textPointSize * zoom
+            f.font = .systemFont(ofSize: size, weight: .semibold)
+            f.setFrameSize(CGSize(width: f.frame.width, height: size + 10))
+        }
+        if tool == .text || textField != nil {
+            showBadge(String(format: L("Text size %d"), Int(textPointSize.rounded())))
+        } else {
             showBadge(String(format: L("Thickness %d"), Int(lineWidth.rounded())))
         }
+        needsDisplay = true
     }
 
     private func changeZoom(_ factor: CGFloat) {
@@ -292,6 +324,8 @@ final class ZoomView: NSView, NSTextFieldDelegate {
         if mode == .zoom {
             if e.keyCode == 126 { changeZoom(1.25) }
             if e.keyCode == 125 { changeZoom(0.8) }
+            if key == "+" || key == "=" { adjustWidth(by: 1) }
+            if key == "-" { adjustWidth(by: -1) }
             return
         }
         switch key {
@@ -307,6 +341,9 @@ final class ZoomView: NSView, NSTextFieldDelegate {
         case "k": toggleBoard(.black)
         case "e": clearAll()
         case "x": tool = .eraser
+        case "n": tool = .step
+        case "+", "=": adjustWidth(by: 1)
+        case "-": adjustWidth(by: -1)
         default: break
         }
     }
@@ -318,7 +355,7 @@ final class ZoomView: NSView, NSTextFieldDelegate {
     // MARK: - Text
 
     private func beginText(atView p: CGPoint, image ip: CGPoint) {
-        let size = max(14, lineWidth * 5 + 8) * zoom
+        let size = textPointSize * zoom
         let f = NSTextField(frame: CGRect(x: p.x, y: p.y, width: max(160, bounds.width - p.x - 20), height: size + 10))
         f.isBordered = false
         f.drawsBackground = false
@@ -363,6 +400,7 @@ final class ZoomView: NSView, NSTextFieldDelegate {
             (.rect, "rectangle", L("Rectangle (draw while holding ⌘)")),
             (.ellipse, "circle", L("Ellipse (draw while holding Tab)")),
             (.text, "textformat", L("Text (T)")),
+            (.step, "1.circle", L("Step number (N)")),
             (.eraser, "eraser", L("Eraser (X)"))
         ]
         var views: [NSView] = []
@@ -380,6 +418,15 @@ final class ZoomView: NSView, NSTextFieldDelegate {
             views.append(s)
         }
         swatches.first?.isOn = true
+        views.append(BarDivider(vertical: false))
+        let slider = NSSlider(value: Double(lineWidth), minValue: 1, maxValue: 24, target: self, action: #selector(widthSliderChanged(_:)))
+        slider.controlSize = .small
+        slider.refusesFirstResponder = true          // keep keyboard shortcuts working after a drag
+        slider.translatesAutoresizingMaskIntoConstraints = false
+        slider.widthAnchor.constraint(equalToConstant: 90).isActive = true
+        slider.toolTip = L("Thickness")
+        widthSlider = slider
+        views.append(slider)
         views.append(BarDivider(vertical: false))
         views += [
             IconButton(symbol: "arrow.uturn.backward", tip: L("Undo (⌘Z)"), target: self, action: #selector(undoTapped)),
@@ -406,7 +453,7 @@ final class ZoomView: NSView, NSTextFieldDelegate {
         guard bar != nil else { return }
         let overBar = bar.frame.insetBy(dx: -6, dy: -6).contains(mouse)
         let near = mouse.y > bounds.height - bar.frame.height - 70 || Date() < barPinnedUntil
-        bar.isHidden = !(mode == .draw && near)
+        bar.isHidden = !near
         setCursorHidden(mode == .draw && !(overBar && !bar.isHidden))
     }
 

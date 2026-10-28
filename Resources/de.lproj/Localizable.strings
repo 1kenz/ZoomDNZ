@@ -91,3 +91,6 @@
 "Eraser (X)" = "Radierer (X)";
 "Eraser" = "Radierer";
 "Eraser: drag over a drawing to remove it" = "Radierer: zum Entfernen über eine Zeichnung ziehen";
+"Text size %d" = "Schriftgröße %d";
+"Step number (N)" = "Schrittnummer (N)";
+"Numbered step: click to place 1, 2, 3…" = "Nummerierter Schritt: klicken, um 1, 2, 3… zu setzen";

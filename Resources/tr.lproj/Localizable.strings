@@ -91,3 +91,6 @@
 "Eraser (X)" = "Silgi (X)";
 "Eraser" = "Silgi";
 "Eraser: drag over a drawing to remove it" = "Silgi: silmek için çizimin üzerinden sürükleyin";
+"Text size %d" = "Yazı boyutu %d";
+"Step number (N)" = "Adım numarası (N)";
+"Numbered step: click to place 1, 2, 3…" = "Numaralı adım: 1, 2, 3… yerleştirmek için tıklayın";

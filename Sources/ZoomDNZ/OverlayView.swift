@@ -396,6 +396,7 @@ final class OverlayView: NSView, NSTextFieldDelegate {
         styleViews.append(BarDivider(vertical: false))
         let slider = NSSlider(value: Double(lineWidth), minValue: 1, maxValue: 12, target: self, action: #selector(sliderChanged(_:)))
         slider.controlSize = .small
+        slider.refusesFirstResponder = true          // keep keyboard shortcuts working after a drag
         slider.translatesAutoresizingMaskIntoConstraints = false
         slider.widthAnchor.constraint(equalToConstant: 80).isActive = true
         slider.toolTip = L("Thickness")
@@ -452,7 +453,14 @@ final class OverlayView: NSView, NSTextFieldDelegate {
         swatches.forEach { $0.isOn = ($0 === s) }
     }
 
-    @objc private func sliderChanged(_ s: NSSlider) { lineWidth = CGFloat(s.doubleValue) }
+    @objc private func sliderChanged(_ s: NSSlider) {
+        lineWidth = CGFloat(s.doubleValue)
+        if let f = textField {                       // live preview of the text size while typing
+            let size = max(14, lineWidth * 5 + 8)
+            f.font = .systemFont(ofSize: size, weight: .semibold)
+            f.setFrameSize(CGSize(width: f.frame.width, height: size + 8))
+        }
+    }
 
     // MARK: - Actions
 
