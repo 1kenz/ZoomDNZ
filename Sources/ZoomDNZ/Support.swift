@@ -57,23 +57,33 @@ enum Alerts {
 }
 
 enum Permissions {
+    /// Set once the system permission dialog has been shown in this launch.
+    @MainActor private static var requestedThisLaunch = false
+
+    /// Returns whether the caller should go on and capture.
+    /// Without permission the first call shows only the macOS dialog (which has its own
+    /// "Open System Settings" button) and stops, so the user never sees two dialogs for one action.
+    /// Later calls try the real capture, because the preflight check returns false negatives on some
+    /// macOS versions; `showDenied()` only opens System Settings if that capture fails again.
     @MainActor
     static func ensureScreenRecording() -> Bool {
-        // The preflight check returns false negatives on some macOS versions, so we attempt the real
-        // capture and show the alert only if that fails.
-        if !CGPreflightScreenCaptureAccess() { CGRequestScreenCaptureAccess() }
+        if CGPreflightScreenCaptureAccess() { return true }
+        if !requestedThisLaunch {
+            requestedThisLaunch = true
+            CGRequestScreenCaptureAccess()
+            return false
+        }
         return true
     }
 
+    /// Called when a capture fails. The macOS dialog already explains the permission, so no
+    /// second dialog of our own: the first failure stays silent, later ones open System Settings.
+    @MainActor private static var deniedOnce = false
+
     @MainActor
     static func showDenied() {
-        NSApp.activate(ignoringOtherApps: true)
-        let alert = NSAlert()
-        alert.messageText = L("Screen Recording permission required")
-        alert.informativeText = L("System Settings › Privacy & Security › Screen & System Audio Recording: enable ZoomDNZ, then restart the app.")
-        alert.addButton(withTitle: L("Open System Settings"))
-        alert.addButton(withTitle: L("Cancel"))
-        if alert.runModal() == .alertFirstButtonReturn { openSettings() }
+        if !deniedOnce { deniedOnce = true; return }
+        openSettings()
     }
 
     static func openSettings() {
