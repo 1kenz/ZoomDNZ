@@ -1,1 +1,1 @@
-"NSScreenCaptureUsageDescription" = "ZoomDNZ ekran görüntüsü almak için Ekran Kaydı iznine ihtiyaç duyar.";
+"NSScreenCaptureUsageDescription" = "ZoomDNZ ekran görüntüsü almak için Ekran Kaydı iznine ihtiyaç duyar. Ses kaydetmez ve ağ üzerinden hiçbir şey göndermez.";

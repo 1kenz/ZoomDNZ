@@ -1,1 +1,1 @@
-"NSScreenCaptureUsageDescription" = "ZoomDNZ needs Screen Recording permission to capture your screen.";
+"NSScreenCaptureUsageDescription" = "ZoomDNZ needs Screen Recording permission to capture your screen. It never records audio and never sends anything over the network.";

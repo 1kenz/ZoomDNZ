@@ -81,6 +81,7 @@ Ad-hoc signing changes the app's identity on every build, so macOS may ask again
 | **Storage** | Captures are saved to `~/Documents/ZoomDNZ Screenshots/`, in a directory with mode 0700 and files with mode 0600, so only your user can read them. |
 | **Logging** | Captures are never logged. The app holds no secrets. |
 | **Signing** | Built with the hardened runtime. |
+| **Permissions** | One only: *Screen & System Audio Recording*, to capture the screen. The app does not record audio, and it needs no Accessibility, Input Monitoring, microphone or camera access. |
 | **OCR** | Text recognition runs on your Mac with Apple's Vision framework. |
 
 If iCloud Drive's *Desktop & Documents Folders* is enabled in macOS, the system itself syncs the Documents folder to iCloud. Turn that off or move the captures if that matters to you.

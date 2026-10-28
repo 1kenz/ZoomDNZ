@@ -16,6 +16,6 @@
     <key>LSUIElement</key><true/>
     <key>NSHighResolutionCapable</key><true/>
     <key>NSScreenCaptureUsageDescription</key>
-    <string>ZoomDNZ needs Screen Recording permission to capture your screen.</string>
+    <string>ZoomDNZ needs Screen Recording permission to capture your screen. It never records audio and never sends anything over the network.</string>
 </dict>
 </plist>
