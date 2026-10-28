@@ -80,6 +80,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         perm.image = NSImage(systemSymbolName: "lock.shield", accessibilityDescription: nil)
         menu.addItem(perm)
         menu.addItem(.separator())
+        let about = NSMenuItem(title: String(format: L("About %@"), "ZoomDNZ"), action: #selector(showAbout), keyEquivalent: "")
+        about.image = NSImage(systemSymbolName: "info.circle", accessibilityDescription: nil)
+        menu.addItem(about)
         menu.addItem(NSMenuItem(title: L("Quit ZoomDNZ"), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
         statusItem.menu = menu
 
@@ -123,6 +126,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc private func showShortcuts() { ShortcutsWindow.show() }
+
+    @objc private func showAbout() { AboutWindow.show() }
 
     @objc private func openPermission() { Permissions.openSettings() }
 }

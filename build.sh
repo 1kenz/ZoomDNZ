@@ -14,6 +14,16 @@ cp "$BIN" "$APP/Contents/MacOS/ZoomDNZ"
 cp Resources/Info.plist "$APP/Contents/Info.plist"
 cp -R Resources/en.lproj Resources/tr.lproj Resources/de.lproj "$APP/Contents/Resources/"
 
+# DNZ About metadata (core/standards/about-standard.md §3): build facts come from the build, never from source.
+# Release builds: DNZ_CHANNEL=stable DNZ_ENVIRONMENT=production ./build.sh
+PLB=/usr/libexec/PlistBuddy; PL="$APP/Contents/Info.plist"
+set_plist() { "$PLB" -c "Set :$1 $2" "$PL" 2>/dev/null || "$PLB" -c "Add :$1 string $2" "$PL"; }
+set_plist DNZCommit      "$(git rev-parse --short HEAD 2>/dev/null || echo unknown)"
+set_plist DNZReleaseDate "$(date -u +%Y-%m-%d)"
+set_plist DNZChannel     "${DNZ_CHANNEL:-dev}"
+set_plist DNZEnvironment "${DNZ_ENVIRONMENT:-development}"
+cp app-info.json "$APP/Contents/Resources/app-info.json"
+
 # App icon: generate .icns from the single 1024px PNG
 ICONSET="build/AppIcon.iconset"
 rm -rf "$ICONSET"; mkdir -p "$ICONSET"

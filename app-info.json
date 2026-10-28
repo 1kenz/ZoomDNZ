@@ -1,0 +1,16 @@
+{
+  "name": "ZoomDNZ",
+  "purpose": {
+    "en": "Capture, zoom and draw on your Mac screen. From the menu bar, fully offline.",
+    "tr": "Mac ekranınızı yakalayın, yakınlaştırın ve üzerine çizin. Menü çubuğundan, tamamen çevrimdışı.",
+    "de": "Mac-Bildschirm aufnehmen, zoomen und darauf zeichnen. Aus der Menüleiste, komplett offline."
+  },
+  "developer": "DNZ Security & Software",
+  "usesAI": false,
+  "links": {
+    "privacy": "https://github.com/1kenz/ZoomDNZ#privacy-and-security",
+    "licenses": "https://github.com/1kenz/ZoomDNZ/blob/HEAD/LICENSE",
+    "releaseNotes": "",
+    "support": "https://github.com/1kenz/ZoomDNZ/issues"
+  }
+}
