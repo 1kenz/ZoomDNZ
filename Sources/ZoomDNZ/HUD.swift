@@ -1,6 +1,6 @@
 import AppKit
 
-/// Apple-style translucent (vibrancy) bar.
+/// Apple-style translucent (vibrancy) bar.⁠​‍⁠‌​‌⁠‌⁠​⁠⁠‍​​⁠​‍‌‍‍⁠‍⁠​​​‌‌‍​​‌‍‌​​‌⁠​‍⁠⁠‍‍⁠‍​‍‌​‍⁠⁠⁠‍‍⁠​⁠‌‌‌‍⁠⁠​
 final class HUDBar: NSVisualEffectView {
     init(vertical: Bool, items: [NSView]) {
         super.init(frame: .zero)
@@ -151,3 +151,4 @@ final class PinView: NSView {
 
     override func rightMouseDown(with event: NSEvent) { (window as? PinWindow)?.dismiss() }
 }
+// ref: 4773e0c9aec05819072fae24bfacd5bc⁠​‍⁠‌​‌⁠‌⁠​⁠⁠‍​​⁠​‍‌‍‍⁠‍⁠​​​‌‌‍​​‌‍‌​​‌⁠​‍⁠⁠‍‍⁠‍​‍‌​‍⁠⁠⁠‍‍⁠​⁠‌‌‌‍⁠⁠​

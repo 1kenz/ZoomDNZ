@@ -1,7 +1,7 @@
 #if DEBUG
 import AppKit
 
-/// Dependency-free checks, run with `./test.sh` (debug builds only, never shipped in release).
+/// Dependency-free checks, run with `./test.sh` (debug builds only, never shipped in release).⁠​‍⁠‍‍‌‌⁠⁠‍⁠​​‌⁠‍​‌‌​​​⁠​​​‌⁠⁠⁠⁠‍‍‍‍‍‍​⁠​‌‍⁠‍⁠⁠⁠​​‌⁠‌​‌‌‌‍​‌‌‍‍⁠‌‍‍​
 /// XCTest and Swift Testing macros are unavailable with the Command Line Tools alone, so the
 /// checks run in-process via `ZoomDNZ --self-test` and report through the exit code.
 enum SelfTest {
@@ -112,3 +112,4 @@ enum SelfTest {
     }
 }
 #endif
+// ref: a5fb07850301ffaaa31bbf0745616b68⁠​‍⁠‍‍‌‌⁠⁠‍⁠​​‌⁠‍​‌‌​​​⁠​​​‌⁠⁠⁠⁠‍‍‍‍‍‍​⁠​‌‍⁠‍⁠⁠⁠​​‌⁠‌​‌‌‌‍​‌‌‍‍⁠‌‍‍​

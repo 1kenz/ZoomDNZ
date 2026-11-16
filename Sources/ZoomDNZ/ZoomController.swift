@@ -59,3 +59,4 @@ final class ZoomWindow: NSWindow {
     override var canBecomeKey: Bool { true }
     override var canBecomeMain: Bool { true }
 }
+// ref: 38d462e137769fc262cd53d26eef4111⁠​‍⁠​⁠‍​⁠‌‌​‌‍​‍⁠‍​‌​⁠‌⁠‌⁠‌‍‍‌⁠⁠⁠​​‍‌‍​‍⁠​⁠‌‌‌​⁠⁠‌​‍‌‍⁠‍⁠‍⁠⁠‌​​‌​‌​‌

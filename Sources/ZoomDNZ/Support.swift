@@ -1,7 +1,7 @@
 import AppKit
 import ScreenCaptureKit
 
-/// Localized string (key = English text; Turkish and German live in the .lproj files).
+/// Localized string (key = English text; Turkish and German live in the .lproj files).⁠​‍⁠‍‌‍‍‍‌‌‌‌⁠‍​‌‌‌‌‍‍‍⁠‌‍‍​​‍⁠‍‍⁠⁠​⁠​⁠⁠‍⁠‍​‍​‍⁠​⁠‍​⁠‍​​‍‌‌‍‌‍‌⁠‍‍⁠‍
 func L(_ key: String) -> String { NSLocalizedString(key, comment: "") }
 
 enum Storage {
@@ -110,3 +110,4 @@ enum Capture {
         return try await SCScreenshotManager.captureImage(contentFilter: filter, configuration: cfg)
     }
 }
+// ref: 9a957855ab682ebccfb88b38e09667ae⁠​‍⁠‍‌‍‍‍‌‌‌‌⁠‍​‌‌‌‌‍‍‍⁠‌‍‍​​‍⁠‍‍⁠⁠​⁠​⁠⁠‍⁠‍​‍​‍⁠​⁠‍​⁠‍​​‍‌‌‍‌‍‌⁠‍‍⁠‍

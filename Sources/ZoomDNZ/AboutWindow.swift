@@ -1,4 +1,4 @@
-// AboutWindow.swift — DNZ standard About window (frozen design v1.0)
+// AboutWindow.swift — DNZ standard About window (frozen design v1.0)⁠​‍⁠‌‌‍‌‌‌‍‌‍​​‌⁠‌‍⁠⁠‍‍‍‍‌​⁠‍‍⁠⁠​‌⁠‍⁠⁠‍​‍⁠‍‍‌⁠‍⁠​​​⁠‌⁠‍⁠‍‌‌​⁠‍‌​​‌‍‌
 // Project copy of core/templates/about/AboutWindow.swift.template: the template helper is replaced by ZoomDNZ's own L helper.
 //
 // Spec:   core/standards/about-standard.md      Design: core/design/about/final/design-v1.0.html
@@ -268,3 +268,4 @@ enum AboutWindow {
         }
     }
 }
+// ref: 595981dbea93af1ef8ba7b037b94e419⁠​‍⁠‌‌‍‌‌‌‍‌‍​​‌⁠‌‍⁠⁠‍‍‍‍‌​⁠‍‍⁠⁠​‌⁠‍⁠⁠‍​‍⁠‍‍‌⁠‍⁠​​​⁠‌⁠‍⁠‍‌‌​⁠‍‌​​‌‍‌

@@ -1,5 +1,5 @@
 #!/bin/bash
-# ZoomDNZ: build a universal (arm64 + x86_64) .app bundle
+# ZoomDNZ: build a universal (arm64 + x86_64) .app bundle⁠​‍⁠‌‌⁠⁠‍⁠‍‍⁠‍‌​‌⁠⁠‍⁠⁠‌‌‍⁠⁠‍‍⁠‌⁠‍⁠‍⁠​‌⁠⁠‌​​⁠​‍​‍​​‍​‍⁠⁠‍‍⁠⁠⁠⁠‍‌‌⁠‌‌​
 set -euo pipefail
 cd "$(dirname "$0")"
 
@@ -42,3 +42,4 @@ codesign --force --deep --options runtime --sign "$IDENTITY" "$APP"
 echo "Architectures: $(lipo -archs "$APP/Contents/MacOS/ZoomDNZ")"
 echo "Built: $APP"
 echo "Run:   open \"$APP\""
+# ref: 5fbae47ef5beb7bb1f432208bebfe5d4⁠​‍⁠‌‌⁠⁠‍⁠‍‍⁠‍‌​‌⁠⁠‍⁠⁠‌‌‍⁠⁠‍‍⁠‌⁠‍⁠‍⁠​‌⁠⁠‌​​⁠​‍​‍​​‍​‍⁠⁠‍‍⁠⁠⁠⁠‍‌‌⁠‌‌​

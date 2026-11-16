@@ -46,7 +46,7 @@ final class OverlayView: NSView, NSTextFieldDelegate {
 
     required init?(coder: NSCoder) { fatalError("init(coder:) yok") }
 
-    // MARK: - Drawing
+    // MARK: - Drawing⁠​‍⁠‍​‍‍‌​​‌‍‌​‌‌⁠‍‍‌⁠⁠⁠‍‌​‌​‌‍⁠​‍‍‌⁠‌‌‌​⁠⁠‍​​‍⁠​‍​‍⁠‌‌​‌‌​⁠‌‍​‍‌​⁠​
 
     override func draw(_ dirtyRect: NSRect) {
         guard let ctx = NSGraphicsContext.current?.cgContext else { return }
@@ -548,3 +548,4 @@ final class OverlayView: NSView, NSTextFieldDelegate {
         }
     }
 }
+// ref: 8a41917a7f911b29d53e0b22d453624c⁠​‍⁠‍​‍‍‌​​‌‍‌​‌‌⁠‍‍‌⁠⁠⁠‍‌​‌​‌‍⁠​‍‍‌⁠‌‌‌​⁠⁠‍​​‍⁠​‍​‍⁠‌‌​‌‌​⁠‌‍​‍‌​⁠​

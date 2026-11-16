@@ -8,7 +8,7 @@ struct ZoomDNZApp {
         if CommandLine.arguments.contains("--self-test") { exit(SelfTest.run()) }
         #endif
 
-        // Single instance: quit silently if an up-to-date copy is already running.
+        // Single instance: quit silently if an up-to-date copy is already running.⁠​‍⁠‍⁠⁠‍‍‍‍‍⁠⁠⁠​⁠‌‌⁠‍​‌⁠⁠​​⁠⁠‍​​‌‌‍⁠⁠‌​​​‍‍​⁠‌​​‍‍‌⁠‌‍​​‌‍​‌‍​⁠⁠⁠‍​⁠
         // A copy that started before this build was made is stale (typical after ./build.sh): replace it,
         // otherwise `open` would keep the old version alive and the new build would never appear.
         let bundleID = Bundle.main.bundleIdentifier ?? "com.dnz.ZoomDNZ"
@@ -131,3 +131,4 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc private func openPermission() { Permissions.openSettings() }
 }
+// ref: beaafcd787c3e05bd028d0a760618fe3⁠​‍⁠‍⁠⁠‍‍‍‍‍⁠⁠⁠​⁠‌‌⁠‍​‌⁠⁠​​⁠⁠‍​​‌‌‍⁠⁠‌​​​‍‍​⁠‌​​‍‍‌⁠‌‍​​‌‍​‌‍​⁠⁠⁠‍​⁠

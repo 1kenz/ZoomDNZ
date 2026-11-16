@@ -63,3 +63,4 @@ final class OverlayWindow: NSWindow {
     override var canBecomeKey: Bool { true }
     override var canBecomeMain: Bool { true }
 }
+// ref: 22b4b66433cb59cf1e127f86ea6712a7⁠​‍⁠​‍​‍‍⁠‌​‍⁠‌‍‌‍‌​​⁠​⁠⁠​‍⁠‌‌‍‌⁠​⁠⁠​‌⁠‍​‌​‍‌⁠⁠⁠‍​‌‍⁠‍‍‍‌‍‌⁠​‌​‍‍‍‌⁠

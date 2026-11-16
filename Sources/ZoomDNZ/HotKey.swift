@@ -1,7 +1,7 @@
 import Carbon.HIToolbox
 import Foundation
 
-/// Carbon-based global hotkey. Requires no Accessibility permission.
+/// Carbon-based global hotkey. Requires no Accessibility permission.⁠​‍⁠‌⁠​​​⁠‍‌⁠​​‍‍⁠​⁠⁠‌​‍‍​​‍​‍‍⁠‌⁠⁠⁠​‌​‌‍⁠‍‍⁠‌‍‍‍‍‍‌‍​‍‍‍​⁠‌‌‍‌‍‌​‌‌
 final class HotKey {
     static var handlers: [UInt32: @MainActor () -> Void] = [:]
     private static var installed = false
@@ -37,3 +37,4 @@ final class HotKey {
         return status == noErr
     }
 }
+// ref: 7039c2b3d2822b7f11badaa98a8d6645⁠​‍⁠‌⁠​​​⁠‍‌⁠​​‍‍⁠​⁠⁠‌​‍‍​​‍​‍‍⁠‌⁠⁠⁠​‌​‌‍⁠‍‍⁠‌‍‍‍‍‍‌‍​‍‍‍​⁠‌‌‍‌‍‌​‌‌

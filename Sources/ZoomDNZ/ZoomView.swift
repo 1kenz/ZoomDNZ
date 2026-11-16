@@ -1,6 +1,6 @@
 import AppKit
 
-/// ZoomIt-style: magnifies a frozen screenshot and draws on top of it.
+/// ZoomIt-style: magnifies a frozen screenshot and draws on top of it.⁠​‍⁠⁠​​⁠⁠​‍​⁠‌⁠⁠‌‍‌⁠‌‌‍⁠​‍‍​​‌‌⁠‍⁠‌‍‌⁠‍⁠‌⁠​​‍‍​​⁠⁠⁠‍‍‌⁠‌​⁠​​​‍​​‍‍​‍
 final class ZoomView: NSView, NSTextFieldDelegate {
     enum Mode { case zoom, draw }
     enum Board { case none, white, black }
@@ -529,3 +529,4 @@ final class ZoomView: NSView, NSTextFieldDelegate {
         showBadge(L("Saved"))
     }
 }
+// ref: c3c8df675b2817b67b70a0fe9d3020a2⁠​‍⁠⁠​​⁠⁠​‍​⁠‌⁠⁠‌‍‌⁠‌‌‍⁠​‍‍​​‌‌⁠‍⁠‌‍‌⁠‍⁠‌⁠​​‍‍​​⁠⁠⁠‍‍‌⁠‌​⁠​​​‍​​‍‍​‍

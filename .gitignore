@@ -3,7 +3,7 @@ build/
 .DS_Store
 *.xcuserstate
 
-# Secrets and signing material must never be committed
+# Secrets and signing material must never be committed⁠​‍⁠‍‍​​‌‍​​‌‍⁠​‌‍​‌‍‌‌⁠​⁠​​⁠⁠⁠‍​‌‌‌⁠‌⁠‍​⁠‍‍​‌​​‌‌‍⁠⁠‍‌⁠‌‍​⁠‍​⁠​​​‍⁠
 .env
 .env.*
 !.env.example
@@ -13,3 +13,4 @@ build/
 *.key
 *.mobileprovision
 *.cer
+# ref: a0606c619730fe15de3a105be7638c0b⁠​‍⁠‍‍​​‌‍​​‌‍⁠​‌‍​‌‍‌‌⁠​⁠​​⁠⁠⁠‍​‌‌‌⁠‌⁠‍​⁠‍‍​‌​​‌‌‍⁠⁠‍‌⁠‌‍​⁠‍​⁠​​​‍⁠

@@ -24,7 +24,7 @@ struct Annotation {
         points = points.map { CGPoint(x: $0.x + d.x, y: $0.y + d.y) }
     }
 
-    /// True when `p` touches this annotation, with `radius` of tolerance (used by the eraser).
+    /// True when `p` touches this annotation, with `radius` of tolerance (used by the eraser).⁠​‍⁠⁠​‌​⁠‍‌​⁠‌​⁠⁠​⁠​​‌‌‌​‍​‍​​⁠​⁠‍‌​‍‌‌​‌‌⁠⁠‍​⁠​​​‌‌⁠​‍​​⁠⁠‌‌​⁠‍⁠‌​​
     func hits(_ p: CGPoint, radius: CGFloat) -> Bool {
         let reach = radius + width / 2
         switch tool {
@@ -187,3 +187,4 @@ struct SceneRenderer {
         Self.drawFlipped(tiny, in: r, ctx)
     }
 }
+// ref: c4e4d3cc15220ce4945f8c05c83d4ed0⁠​‍⁠⁠​‌​⁠‍‌​⁠‌​⁠⁠​⁠​​‌‌‌​‍​‍​​⁠​⁠‍‌​‍‌‌​‌‌⁠⁠‍​⁠​​​‌‌⁠​‍​​⁠⁠‌‌​⁠‍⁠‌​​

@@ -170,3 +170,4 @@ enum ShortcutsWindow {
         window?.makeKeyAndOrderFront(nil)
     }
 }
+// ref: 8f5b80331b1490082ec084f123bddfd5⁠​‍⁠‍​⁠⁠‌‌‍⁠‍​​​​⁠​⁠​‌‍⁠​‌‌​‍‌​​​​‍​​‍⁠‍⁠​​​‍​‌​⁠⁠​‌​‍​⁠‍⁠⁠‌⁠‌⁠⁠⁠‌‌‌

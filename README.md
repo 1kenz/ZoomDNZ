@@ -1,4 +1,4 @@
-<div align="center">
+<div align="center">⁠​‍⁠⁠⁠⁠⁠​⁠‍​‌‍‍⁠​‌​‌​⁠‍‍‌‌‌​‍​‍​‌⁠‍‍​‌​⁠‍‍‍‍‍⁠⁠‍⁠‍‍⁠‍‍​‍​‍‌‍⁠⁠‌⁠​‌‍⁠
 
 <img src="Resources/AppIcon.png" width="120" alt="ZoomDNZ app icon">
 
@@ -111,3 +111,4 @@ MIT. See [LICENSE](LICENSE).
 Built by [DNZ Security & Software](https://github.com/1kenz) · [Website](https://1kenz.github.io/ZoomDNZ/)
 
 </div>
+<!-- ref: ff386b113a54887a13aabeeba226f71b⁠​‍⁠⁠⁠⁠⁠​⁠‍​‌‍‍⁠​‌​‌​⁠‍‍‌‌‌​‍​‍​‌⁠‍‍​‌​⁠‍‍‍‍‍⁠⁠‍⁠‍‍⁠‍‍​‍​‍‌‍⁠⁠‌⁠​‌‍⁠ -->
